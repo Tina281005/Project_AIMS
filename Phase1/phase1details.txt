@@ -1,0 +1,19 @@
+Phase 1: Basic Simulation Setup
+Servers: Simulate servers using objects or lightweight processes. Each has:
+
+Location (region)
+
+Latency (simulated value)
+
+CPU load (%)
+
+Packet loss rate
+
+Jitter (variance in response latency)
+
+Current number of requests
+
+Client requests: A request is just a demand for a file (e.g., index.html).
+
+➡️ Implementation:
+We’ll make a Server class in Python with these metrics, and a SmartRouter class that queries all servers and picks the optimal one.
