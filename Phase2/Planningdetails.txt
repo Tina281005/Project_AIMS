@@ -1,0 +1,49 @@
+Data Collection Design Outline for AI Model
+1. Metrics to Collect per Server
+Timestamp (simulated time unit, e.g., minute or second)
+
+Server ID/Name
+
+Region
+
+Latency (ms)
+
+CPU load (%)
+
+Packet loss (%)
+
+Jitter (ms)
+
+Active requests (count)
+
+(Optional) Number of incoming requests during this time unit
+
+2. Frequency & Duration
+Collect data at fixed intervals (e.g., every simulated minute or every 5 simulated minutes)
+
+Simulate and collect data for at least a full week to capture patterns (e.g., server load peaks by time of day)
+
+Each interval’s record reflects server status at that moment
+
+3. Data Storage
+Store data as rows in an in-memory list or directly write to a CSV file
+
+Example row schema:
+
+| Timestamp | Server Name | Region | Latency | CPU Load | Packet Loss | Jitter | Active Requests | Incoming Requests |
+
+4. Label/Output for AI
+Target can be the predicted load or latency in the next interval(s)
+
+For now, just collect historical data; later define how to create labels from this data for supervised learning
+
+5. Simulation Flow
+For each timestep:
+
+Update all servers’ metrics randomly (using current get_metrics logic)
+
+Log their metrics with timestamp
+
+Simulate some random incoming requests arriving
+
+Update active_requests accordingly (optional for deeper realism)

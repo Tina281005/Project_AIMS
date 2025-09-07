@@ -1,0 +1,19 @@
+What Phase 3 is :
+Data collection: Log server metrics (latency, CPU, packet loss, jitter, active requests) over time during your simulation.
+
+Model training: Use this historical data to train an AI/ML model (e.g., Random Forest, Gradient Boosting, or LSTM) that predicts future server load or performance issues based on time of day and past patterns.
+
+Predictive routing: Before routing a new request, the smart router queries this AI model to predict if a server will be overloaded soon and avoids it—even if current metrics look good.
+
+This moves selection from reactive to predictive.
+
+Steps for Implementation
+Extend your simulation to store metric logs over a defined period (e.g., simulated week).
+
+Prepare training data with features like time, region, past metrics, etc.
+
+Select and train an AI model using a standard ML library like scikit-learn or deep learning library like TensorFlow/PyTorch.
+
+Modify the router so it factors AI predictions in the scoring/selection.
+
+Test and compare how predictive routing improves CDN efficiency over multi-metric reactive selection.

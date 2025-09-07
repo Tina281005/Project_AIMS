@@ -1,6 +1,8 @@
 import random
 import time
-
+import joblib
+from datetime import datetime
+import pandas as pd 
 # ----------------------
 # Server Class
 # ----------------------
@@ -16,7 +18,7 @@ class Server:
 
     def handle_request(self):
         self.active_requests += 1
-        time.sleep(0.1)
+        time.sleep(0.01)
         self.active_requests -= 1
         return f"Response from {self.name} in {self.region}"
 
@@ -37,47 +39,98 @@ class Server:
 # Smart Router Class
 # ----------------------
 class SmartRouter:
-    # Assign weights to each metric (must add up to 1.0)
     WEIGHTS = {
         "latency": 0.4,
-        "cpu_load": 0.2,
+        "cpu_load": 0.15,
         "packet_loss": 0.15,
         "jitter": 0.15,
-        "active_requests": 0.1,
-    }
-    # Normalization constants (upper bounds for each metric)
-    NORMALIZE = {
-        "latency": 100,         # ms (range is 20-100)
-        "cpu_load": 100,        # percentage
-        "packet_loss": 5,       # percent
-        "jitter": 10,           # ms
-        "active_requests": 10,  # Assume max 10 for demo
+        "active_requests": 0.05,
+        "predicted_cpu_load": 0.10,  # AI prediction included
     }
 
-    def __init__(self, servers):
+    NORMALIZE = {
+        "latency": 100,
+        "cpu_load": 100,
+        "packet_loss": 5,
+        "jitter": 10,
+        "active_requests": 10,
+        "predicted_cpu_load": 100,
+    }
+
+    def __init__(self, servers, model_path):
         self.servers = servers
+        self.model = joblib.load(model_path)
 
     def calculate_score(self, metrics):
-        # Normalize and weight each metric, then sum
         score = 0.0
         for metric in self.WEIGHTS:
-            value = metrics[metric]
+            value = metrics.get(metric, 0)  # Use 0 if not present
             max_value = self.NORMALIZE[metric]
-            normalized = min(value / max_value, 1.0)  # Clamp to 1.0
+            normalized = min(value / max_value, 1.0)
             score += normalized * self.WEIGHTS[metric]
         return score
+
+    def get_time_features(self):
+        now = datetime.now()
+        hour = now.hour
+        dayofweek = now.weekday()
+        minute = now.minute
+        minute_of_day = hour * 60 + minute
+        is_weekend = 1 if dayofweek >= 5 else 0
+        return hour, dayofweek, minute_of_day, is_weekend
 
     def choose_best_server(self):
         best_server = None
         best_score = float("inf")
+        hour, dayofweek, _, _ = self.get_time_features() # We only need hour and dayofweek
+
         for s in self.servers:
             metrics = s.get_metrics()
+
+            # --- START OF FIX ---
+            
+            # 1. Create the one-hot encoded features for the server names
+            server_features = [0, 0, 0, 0] # [Server1, Server2, Server3, Server4]
+            if s.name == "Server1":
+                server_features = [1, 0, 0, 0]
+            elif s.name == "Server2":
+                server_features = [0, 1, 0, 0]
+            elif s.name == "Server3":
+                server_features = [0, 0, 1, 0]
+            elif s.name == "Server4":
+                server_features = [0, 0, 0, 1]
+            
+            # 2. Build the final feature list in the EXACT same order as during training
+            features = [[
+                metrics["latency"],
+                metrics["cpu_load"],
+                metrics["packet_loss"],
+                metrics["jitter"],
+                metrics["active_requests"],
+                hour,
+                dayofweek,
+                *server_features # This unpacks the list [1, 0, 0, 0] into individual elements
+            ]]
+
+    
+            # Convert to DataFrame with feature names to remove the warning
+            feature_names = [
+                "latency_ms", "cpu_load_percent", "packet_loss_percent", "jitter_ms",
+                "active_requests", "hour", "dayofweek", "server_Server1", 
+                "server_Server2", "server_Server3", "server_Server4"
+            ]
+            features_df = pd.DataFrame(features, columns=feature_names)
+
+            predicted_cpu = self.model.predict(features_df)[0]
+            metrics["predicted_cpu_load"] = predicted_cpu
+
             score = self.calculate_score(metrics)
+            print(f"{s.name} ({s.region}) - Score: {score:.3f} | Pred CPU load: {predicted_cpu:.1f}")
+
             if score < best_score:
                 best_score = score
                 best_server = s
-            # For demonstration, print each server's score:
-            print(f"  {s.name} ({s.region}) - Score: {score:.3f} [latency: {metrics['latency']}ms, cpu: {metrics['cpu_load']:.1f}%, loss: {metrics['packet_loss']:.2f}%, jitter: {metrics['jitter']:.2f}ms, active: {metrics['active_requests']}]")
+
         return best_server
 
 # ----------------------
@@ -91,7 +144,8 @@ if __name__ == "__main__":
         Server("Server4", "India")
     ]
 
-    router = SmartRouter(servers)
+    # Correct relative path to trained model
+    router = SmartRouter(servers, "../Phase3/cpu_load_predictor_rf.joblib")
 
     # Simulate 5 client requests
     for i in range(5):

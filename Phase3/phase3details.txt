@@ -1,0 +1,9 @@
+Load the CSV data (server_metrics_week.csv)
+
+Prepare features (input data) and the target (what you want to predict, e.g., future CPU load)
+
+Train a machine learning model (Random Forest) to predict next-minute CPU load per server
+
+Evaluate model performance
+
+Save the trained model (for router integration in the next step)
