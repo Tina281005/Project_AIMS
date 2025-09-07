@@ -79,59 +79,54 @@ class SmartRouter:
         is_weekend = 1 if dayofweek >= 5 else 0
         return hour, dayofweek, minute_of_day, is_weekend
 
-    def choose_best_server(self):
+    def choose_best_server_with_scores(self):
         best_server = None
         best_score = float("inf")
-        hour, dayofweek, _, _ = self.get_time_features() # We only need hour and dayofweek
+        hour, dayofweek, _, _ = self.get_time_features()
+
+        scores_data = []
 
         for s in self.servers:
             metrics = s.get_metrics()
 
-            # --- START OF FIX ---
+            # Create the one-hot encoded features for the server names
+            server_features = [0, 0, 0, 0]
+            if s.name == "Server1": server_features = [1, 0, 0, 0]
+            elif s.name == "Server2": server_features = [0, 1, 0, 0]
+            elif s.name == "Server3": server_features = [0, 0, 1, 0]
+            elif s.name == "Server4": server_features = [0, 0, 0, 1]
             
-            # 1. Create the one-hot encoded features for the server names
-            server_features = [0, 0, 0, 0] # [Server1, Server2, Server3, Server4]
-            if s.name == "Server1":
-                server_features = [1, 0, 0, 0]
-            elif s.name == "Server2":
-                server_features = [0, 1, 0, 0]
-            elif s.name == "Server3":
-                server_features = [0, 0, 1, 0]
-            elif s.name == "Server4":
-                server_features = [0, 0, 0, 1]
-            
-            # 2. Build the final feature list in the EXACT same order as during training
-            features = [[
-                metrics["latency"],
-                metrics["cpu_load"],
-                metrics["packet_loss"],
-                metrics["jitter"],
-                metrics["active_requests"],
-                hour,
-                dayofweek,
-                *server_features # This unpacks the list [1, 0, 0, 0] into individual elements
+            # Build the feature list for prediction
+            features_list = [[
+                metrics["latency"], metrics["cpu_load"], metrics["packet_loss"],
+                metrics["jitter"], metrics["active_requests"], hour, dayofweek,
+                *server_features
             ]]
 
-    
-            # Convert to DataFrame with feature names to remove the warning
             feature_names = [
                 "latency_ms", "cpu_load_percent", "packet_loss_percent", "jitter_ms",
                 "active_requests", "hour", "dayofweek", "server_Server1", 
                 "server_Server2", "server_Server3", "server_Server4"
             ]
-            features_df = pd.DataFrame(features, columns=feature_names)
-
+            features_df = pd.DataFrame(features_list, columns=feature_names)
             predicted_cpu = self.model.predict(features_df)[0]
+            
             metrics["predicted_cpu_load"] = predicted_cpu
-
             score = self.calculate_score(metrics)
-            print(f"{s.name} ({s.region}) - Score: {score:.3f} | Pred CPU load: {predicted_cpu:.1f}")
-
+            
+            # Store data for the dashboard table
+            row = metrics.copy()
+            row['score'] = score
+            row['server_name'] = s.name
+            scores_data.append(row)
+            
             if score < best_score:
                 best_score = score
                 best_server = s
-
-        return best_server
+        
+        # Create a DataFrame from the collected scores
+        scores_df = pd.DataFrame(scores_data).set_index('server_name')
+        return best_server, scores_df
 
 # ----------------------
 # Simulation Example
