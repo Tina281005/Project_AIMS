@@ -1,4 +1,4 @@
-🧠 AI-Enhanced CDN Smart Router
+🧠 AI-Enhanced CDN Smart Router :-
 This project is a simulation of a modern Content Delivery Network (CDN) that uses a predictive, AI-enhanced smart router to perform intelligent server selection. Unlike traditional CDNs that route based on latency alone, this router considers multiple real-time metrics and uses a machine learning model to predict future server load, moving from a reactive to a predictive routing strategy.
 
 ✨ Features
