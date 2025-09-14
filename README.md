@@ -1,21 +1,21 @@
 # 🧠 AI-Enhanced CDN Smart Router :-
 This project is a simulation of a modern Content Delivery Network (CDN) that uses a predictive, AI-enhanced smart router to perform intelligent server selection. Unlike traditional CDNs that route based on latency alone, this router considers multiple real-time metrics and uses a machine learning model to predict future server load, moving from a reactive to a predictive routing strategy.
 
-✨ Features
-Multi-Metric Routing: The smart router calculates a weighted health score for each server based on latency, CPU load, packet loss, jitter, and active requests.
+## ✨ Features
+**Multi-Metric Routing:** The smart router calculates a weighted health score for each server based on latency, CPU load, packet loss, jitter, and active requests.
 
-AI-Powered Predictions: A RandomForestRegressor model, trained on a week's worth of simulated server data, predicts future CPU load based on time-of-day and day-of-week patterns.
+**AI-Powered Predictions:** A RandomForestRegressor model, trained on a week's worth of simulated server data, predicts future CPU load based on time-of-day and day-of-week patterns.
 
-Predictive over Reactive: By factoring in the AI prediction, the router can proactively avoid servers that are likely to become overloaded, even if their current metrics look good.
+**Predictive over Reactive:** By factoring in the AI prediction, the router can proactively avoid servers that are likely to become overloaded, even if their current metrics look good.
 
-Live Monitoring Dashboard: An interactive web dashboard built with Streamlit provides a real-time view of server health, AI predictions, and the router's decisions.
+**Live Monitoring Dashboard:** An interactive web dashboard built with Streamlit provides a real-time view of server health, AI predictions, and the router's decisions.
 
 ## 🚀 How It Works
 The project is composed of three main parts:
 
-Data Collection (data_collection.py): A script that simulates four servers across different global regions (US, Europe, Asia, India). It generates a week of realistic, patterned metric data, where each server has unique daily peak hours. This data is saved to server_metrics_week.csv.
+**Data Collection (data_collection.py):** A script that simulates four servers across different global regions (US, Europe, Asia, India). It generates a week of realistic, patterned metric data, where each server has unique daily peak hours. This data is saved to server_metrics_week.csv.
 
-Model Training (trainmodel.py): This script reads the collected data, engineers time-based features (hour, day of the week), and trains a Random Forest model to predict the next minute's CPU load. The trained model is saved as cpu_load_predictor_rf.joblib.
+**Model Training (trainmodel.py):** This script reads the collected data, engineers time-based features (hour, day of the week), and trains a Random Forest model to predict the next minute's CPU load. The trained model is saved as cpu_load_predictor_rf.joblib.
 
 Live Simulation & Dashboard (dashboard.py & Server.py):
 
@@ -28,13 +28,13 @@ In real-time, the dashboard simulates client requests. For each request, the Sma
 The dashboard visualizes this entire process, updating every few seconds.
 
 ## 🛠️ Technology Stack
-Backend: Python
+**Backend:** Python
 
-Machine Learning: Scikit-learn, Pandas
+**Machine Learning:** Scikit-learn, Pandas
 
-Dashboard: Streamlit
+**Dashboard:** Streamlit
 
-Core Libraries: Joblib, NumPy
+**Core Libraries:** Joblib, NumPy
 
 ## 📦 Installation & Setup
 Clone the repository:
