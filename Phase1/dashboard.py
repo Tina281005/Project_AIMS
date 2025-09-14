@@ -91,7 +91,8 @@ for i in range(1000): # The loop will run for 1000 iterations
                                .format("{:.0f}", subset=['latency']) \
                                .set_properties(**{'text-align': 'center'})
 
-            st.dataframe(style_df(scores_df), use_container_width=True)
+            st.dataframe(style_df(scores_df), width="stretch")
+
 
         with col2:
             st.header("📜 Live Decision Log")
