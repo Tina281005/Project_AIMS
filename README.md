@@ -1,7 +1,7 @@
-# 🧠 AI-Enhanced CDN Smart Router :-
+# AI-Enhanced CDN Smart Router :-
 This project is a simulation of a modern Content Delivery Network (CDN) that uses a predictive, AI-enhanced smart router to perform intelligent server selection. Unlike traditional CDNs that route based on latency alone, this router considers multiple real-time metrics and uses a machine learning model to predict future server load, moving from a reactive to a predictive routing strategy.
 
-## ✨ Features
+## Features
 **Multi-Metric Routing:** The smart router calculates a weighted health score for each server based on latency, CPU load, packet loss, jitter, and active requests.
 
 **AI-Powered Predictions:** A RandomForestRegressor model, trained on a week's worth of simulated server data, predicts future CPU load based on time-of-day and day-of-week patterns.
@@ -10,7 +10,7 @@ This project is a simulation of a modern Content Delivery Network (CDN) that use
 
 **Live Monitoring Dashboard:** An interactive web dashboard built with Streamlit provides a real-time view of server health, AI predictions, and the router's decisions.
 
-## 🚀 How It Works
+## How It Works
 The project is composed of three main parts:
 
 **Data Collection (data_collection.py):** A script that simulates four servers across different global regions (US, Europe, Asia, India). It generates a week of realistic, patterned metric data, where each server has unique daily peak hours. This data is saved to server_metrics_week.csv.
@@ -27,7 +27,7 @@ In real-time, the dashboard simulates client requests. For each request, the Sma
 
 The dashboard visualizes this entire process, updating every few seconds.
 
-## 🛠️ Technology Stack
+## Technology Stack
 **Backend:** Python
 
 **Machine Learning:** Scikit-learn, Pandas
@@ -36,7 +36,7 @@ The dashboard visualizes this entire process, updating every few seconds.
 
 **Core Libraries:** Joblib, NumPy
 
-## 📦 Installation & Setup
+## Installation & Setup
 Clone the repository:
 
 ```Bash
@@ -47,7 +47,7 @@ Install the required libraries:
 ```Bash
 pip install scikit-learn pandas joblib streamlit
 ```
-🏃‍♂️ How to Run the Project
+How to Run the Project
 You can run the project in three stages:
 (Optional) Generate New Data: If you want to generate a new dataset, run the data collection script.
 ```Bash
